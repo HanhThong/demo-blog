@@ -1,0 +1,38 @@
+version: "3"
+
+networks:
+  wordpress-network:
+
+services:
+  mysql:
+    image: mysql:5.6
+    networks:
+      - wordpress-network
+    hostname: mysql
+    restart: always
+    environment: 
+      - MYSQL_ROOT_PASSWORD=123123
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    networks:
+      - wordpress-network
+    hostname: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=mysql
+
+  php-apache:
+    build: 
+      context: .
+      dockerfile: docker/php/Dockerfile
+    networks:
+      - wordpress-network
+    hostname: wordpress
+    volumes:
+      - ./wordpress:/var/www/html/
+    restart: always
+    ports:
+      - 80:80
